@@ -1,0 +1,5 @@
+CIRCUITPY_WIFI_SSID = "Pretty fly or A WIFI"
+CIRCUITPY_WIFI_PASSWORD = "Spooky091993"
+ADAFRUIT_AIO_USERNAME = "Kyle_A"
+ADAFRUIT_AIO_KEY      = "aio_nTNj22zKxzi4rRl5s7oELJ1jYGBN"
+test_variable = "this is a test"
