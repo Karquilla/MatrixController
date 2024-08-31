@@ -11,7 +11,7 @@ setup = False
 menu_setup = False
 timer = Timer()
 
-while True:
+while True: 
     change = False
     curr_data = get_data()
     if curr_data != data:
@@ -32,7 +32,7 @@ while True:
     elif command == 0:
         if menu_setup == False:
             display.set_text(
-                "$quit $text_display $timer $stop_watch"
+                "$quit $timer\n$text_display\n$stop_watch"
             )
             menu_setup = True
     elif command == 1:

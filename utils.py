@@ -4,7 +4,7 @@ import sys
 import displayio
 import time
 import random
-import text_prompt
+import text_prompt as prompt
 from os import getenv
 from adafruit_esp32spi import adafruit_esp32spi_wifimanager
 from digitalio import DigitalInOut
@@ -55,7 +55,7 @@ class text_display:
         self.text_area = label.Label(
         terminalio.FONT,
         text = self.text,
-        color= 0x00076e,  # blue
+        color= prompt.hex_colors.get("violet"),  
         scale = int(self.scale),
         #x = self.pos[0]
         #scrolling = self.scrolling,
@@ -114,12 +114,9 @@ class Timer:
             time.sleep(5)
             self.running = False
 
-
-            
-
 def matrix_startup():
     random.seed(time.time()*1000)
-    matrix = text_display(text = random.choice(text_prompt.welcome))
+    matrix = text_display(text = random.choice(prompt.welcome))
     matrix.setup_text()
     matrixportal.display.refresh()
 
@@ -131,12 +128,7 @@ def get_data():
     if int(time.time() % 10) == 0:
         try:
             response = matrixportal.fetch()
-            
-            
-            
             #print("Received data:", response)
-
-            
             return response
         except Exception as e:
             error = "Error" + str(e)
@@ -163,8 +155,6 @@ def stop_watch(matrix, data):
             get_timer = 0
 
 
-
-
 def led_sign(matrix, sub_c):
     command, text = sub_c.split(' ', 1)
     if command == "text":
@@ -174,17 +164,5 @@ def led_sign(matrix, sub_c):
     if command == "color":
         if (matrix.color != text):
             matrix.color = text
-            matrix.set_color(text_prompt.hex_colors.get(matrix.color))
-
-
-
-
-
-
-
-
-
-
-
-
-
+            matrix.set_color(prompt.hex_colors.get(matrix.color))
+ 
