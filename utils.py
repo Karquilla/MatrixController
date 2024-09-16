@@ -5,6 +5,7 @@ import displayio
 import time
 import random
 import text_prompt as prompt
+import anim_player
 from os import getenv
 from adafruit_esp32spi import adafruit_esp32spi_wifimanager
 from digitalio import DigitalInOut
@@ -15,8 +16,8 @@ from adafruit_matrixportal.matrixportal import MatrixPortal
 import terminalio
 from adafruit_display_text import label
 
-DATA_SOURCE = "https://io.adafruit.com/api/v2/Kyle_A/feeds/test-feed/data"
-DATA_LOCATION = [0,"value"]
+DATA_SOURCE = "https://io.adafruit.com/api/v2/Kyle_A/feeds/test-feed/data/last"
+DATA_LOCATION = ["value"]
 
 secrets = {
     "ssid": getenv("CIRCUITPY_WIFI_SSID"),
@@ -26,7 +27,7 @@ secrets = {
 }
 
 matrixportal = MatrixPortal(status_neopixel=board.NEOPIXEL, debug=False, url = DATA_SOURCE,
-                headers={"X-AIO-Key": secrets["aio_key"]}, json_path = DATA_LOCATION)
+                headers={"X-AIO-Key": secrets["aio_key"]},json_path = DATA_LOCATION )
 time.sleep(2)
 
 command_map = {
@@ -35,6 +36,7 @@ command_map = {
     "text_display" : 1,
     "stop_watch" : 2,
     "timer" : 3,
+    "anim" : 4
 }
 
 def get_menu(command):
@@ -42,16 +44,18 @@ def get_menu(command):
     return sel
 
 class text_display:
-    def __init__(self,pos=(int(32/2),0),color = (0,50,0),scale = 1,scrolling = False,text="*****"):
+    def __init__(self,pos=(int(32/2),0),color = (0,50,0),scale = 1,scrolling = False):
         self.pos = pos
         self.color = color
         self.scale = scale
         self.scrolling = scrolling
-        self.text = text
+        self.text = None
         self.display = matrixportal.display
         self.text_area = None
 
-    def setup_text(self):
+    def setup_text(self, new_text = None):
+        if (new_text != None):
+            self.text = new_text
         self.text_area = label.Label(
         terminalio.FONT,
         text = self.text,
@@ -116,24 +120,26 @@ class Timer:
 
 def matrix_startup():
     random.seed(time.time()*1000)
-    matrix = text_display(text = random.choice(prompt.welcome))
-    matrix.setup_text()
+    textDisplay = text_display()
+    textDisplay.setup_text(new_text = random.choice(prompt.welcome))
     matrixportal.display.refresh()
 
     time.sleep(3)
     
-    return matrix
+    return textDisplay
 
+def startup_anim(player, loops, anim = "HTP"):
+    player.run(anim, loops = loops)
+    
 def get_data():
-    if int(time.time() % 10) == 0:
-        try:
-            response = matrixportal.fetch()
-            #print("Received data:", response)
-            return response
-        except Exception as e:
-            error = "Error" + str(e)
-            print(error)
-    else: return "none"
+    try:
+        response = matrixportal.fetch()
+        #print("Received data:", response)
+        return response
+    except Exception as e:
+        error = "Error" + str(e)
+        print(error)
+        return "none"
 
 def stop_watch(matrix, data):
     _timer = 0

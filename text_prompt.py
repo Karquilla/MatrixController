@@ -2,6 +2,10 @@ welcome = ["I am so \nhappy to \nsee you!","Yay, \nit's you!","I am so \nglad to
 
 text_prompt = "Just enter the text, and I'll make sure it happens, no questions asked!"
 
+anims = { "HTP" : '/bmp/HTP smily.bmp',
+         "AscendingSquares" : "bmp\moving rectangle acending square size adjusted.bmp"}
+
+
 hex_colors = {
     "white": 0xFFFFFF,
     "black": 0x000000,
